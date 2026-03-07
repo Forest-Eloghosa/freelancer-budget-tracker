@@ -1,1 +1,1 @@
-web: gunicorn freelancer_budget_tracker.wsgi:application
+web: gunicorn freelancer_budget_tracker.wsgi
