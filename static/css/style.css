@@ -1,0 +1,25 @@
+/* Global Styles */
+
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Logo */
+
+.app-logo {
+    max-width: 160px;
+    height: auto;
+}
+
+/* Dashboard cards */
+
+.dashboard-card {
+    border-radius: 12px;
+}
+
+/* Page spacing */
+
+.page-container {
+    margin-top: 40px;
+}
