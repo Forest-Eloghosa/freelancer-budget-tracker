@@ -1,37 +1,35 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
-from .models import Transaction
-from .models import Category
-from .forms import CategoryForm
+from .models import Category, Transaction
+from .forms import CategoryForm, TransactionForm
 # Create your views here.
 
 @login_required
 def dashboard(request):
-    total_income = Transaction.objects.filter(
-        user=request.user,
-        category__type='income'
-    ).aggregate(total=Sum('amount'))['total'] or 0
 
-    total_expenses = Transaction.objects.filter(
-        user=request.user,
-        category__type='expense'
-    ).aggregate(total=Sum('amount'))['total'] or 0
+    transactions = Transaction.objects.filter(user=request.user)
 
-    balance = total_income - total_expenses
+    income = transactions.filter(category__type="income").aggregate(
+        Sum("amount")
+    )["amount__sum"] or 0
 
-    recent_transactions = Transaction.objects.filter(
-        user=request.user
-    ).order_by('-date')[:5]
+    expenses = transactions.filter(category__type="expense").aggregate(
+        Sum("amount")
+    )["amount__sum"] or 0
+
+    balance = income - expenses
+
+    recent_transactions = transactions.order_by("-date")[:5]
 
     context = {
-        'total_income': total_income,
-        'total_expenses': total_expenses,
-        'balance': balance,
-        'recent_transactions': recent_transactions,
+        "income": income,
+        "expenses": expenses,
+        "balance": balance,
+        "recent_transactions": recent_transactions,
     }
 
-    return render(request, 'budget/dashboard.html', context)
+    return render(request, "budget/dashboard.html", context)
 
 @login_required
 def categories(request):
@@ -54,16 +52,60 @@ def add_category(request):
 
 @login_required
 def delete_category(request, category_id):
-    category = Category.objects.get(id=category_id, user=request.user)
+    category = get_object_or_404(Category, id=category_id, user=request.user)
     category.delete()
     return redirect('categories')
 
+@login_required
+def edit_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id, user=request.user)
+    form = CategoryForm(request.POST or None, instance=category)
 
+    if form.is_valid():
+        form.save()
+        return redirect('categories')
+
+    return render(request, 'budget/edit_category.html', {'form': form})
+
+@login_required
 def add_transaction(request):
-    return render(request, 'budget/add_transaction.html')
+    form = TransactionForm(request.POST or None, user=request.user)
+
+    if form.is_valid():
+        transaction = form.save(commit=False)
+        transaction.user = request.user
+        transaction.save()
+        return redirect('transactions')
+
+    return render(request, 'budget/add_transaction.html', {'form': form})
 
 
+@login_required
 def transactions(request):
-    return render(request, 'budget/transactions.html')
+    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
+    return render(request, 'budget/transactions.html', {'transactions': transactions})
+
+
+@login_required
+def edit_transaction(request, transaction_id):
+    transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
+    form = TransactionForm(request.POST or None, instance=transaction, user=request.user)
+
+    if form.is_valid():
+        form.save()
+        return redirect('transactions')
+
+    return render(request, 'budget/edit_transaction.html', {'form': form})
+
+
+@login_required
+def delete_transaction(request, transaction_id):
+    transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
+
+    if request.method == 'POST':
+        transaction.delete()
+        return redirect('transactions')
+
+    return render(request, 'budget/delete_transaction.html', {'transaction': transaction})
 
 

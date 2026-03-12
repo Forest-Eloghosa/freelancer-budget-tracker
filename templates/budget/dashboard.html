@@ -18,7 +18,7 @@
             <div class="card shadow-sm border-0 h-100 rounded-4">
                 <div class="card-body text-center">
                     <h2 class="h5 mb-3">Total Income</h2>
-                    <p class="fs-3 fw-bold text-success mb-0">€{{ total_income }}</p>
+                    <p class="fs-3 fw-bold text-success mb-0">€{{ income|floatformat:2  }}</p>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
             <div class="card shadow-sm border-0 h-100 rounded-4">
                 <div class="card-body text-center">
                     <h2 class="h5 mb-3">Total Expenses</h2>
-                    <p class="fs-3 fw-bold text-danger mb-0">€{{ total_expenses }}</p>
+                    <p class="fs-3 fw-bold text-danger mb-0">€{{ expenses|floatformat:2  }}</p>
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
             <div class="card shadow-sm border-0 h-100 rounded-4">
                 <div class="card-body text-center">
                     <h2 class="h5 mb-3">Balance</h2>
-                    <p class="fs-3 fw-bold text-primary mb-0">€{{ balance }}</p>
+                    <p class="fs-3 fw-bold text-primary mb-0">€{{ balance|floatformat:2  }}</p>
                 </div>
             </div>
         </div>
@@ -65,22 +65,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% if recent_transactions %}
-                            {% for transaction in recent_transactions %}
-                                <tr>
-                                    <td>{{ transaction.date }}</td>
-                                    <td>{{ transaction.category.name }}</td>
-                                    <td>€{{ transaction.amount }}</td>
-                                    <td>{{ transaction.description }}</td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="text-center text-muted py-4">
-                                    No transactions recorded yet.
-                                </td>
-                            </tr>
-                        {% endif %}
+                        {% for transaction in recent_transactions %}
+                        <tr>
+                            <td>{{ transaction.date }}</td>
+                            <td>{{ transaction.category.name }}</td>
+                            <td>€{{ transaction.amount }}</td>
+                            <td>{{ transaction.description }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                        <td colspan="4" class="text-center text-muted">
+                        <a href="{% url 'add_transaction' %}" class="btn btn-success">
+                        Add your first transaction
+                        </a>
+                        </td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
