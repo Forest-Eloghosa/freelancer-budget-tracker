@@ -7,29 +7,27 @@ from .forms import CategoryForm, TransactionForm
 
 @login_required
 def dashboard(request):
-
     transactions = Transaction.objects.filter(user=request.user)
 
-    income = transactions.filter(category__type="income").aggregate(
-        Sum("amount")
-    )["amount__sum"] or 0
+    income = transactions.filter(
+        category__type='income'
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
 
-    expenses = transactions.filter(category__type="expense").aggregate(
-        Sum("amount")
-    )["amount__sum"] or 0
+    expenses = transactions.filter(
+        category__type='expense'
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     balance = income - expenses
-
-    recent_transactions = transactions.order_by("-date")[:5]
+    recent_transactions = transactions.order_by('-date')[:5]
 
     context = {
-        "income": income,
-        "expenses": expenses,
-        "balance": balance,
-        "recent_transactions": recent_transactions,
+        'income': float(income),
+        'expenses': float(expenses),
+        'balance': float(balance),
+        'recent_transactions': recent_transactions,
     }
 
-    return render(request, "budget/dashboard.html", context)
+    return render(request, 'budget/dashboard.html', context)
 
 @login_required
 def categories(request):

@@ -4,6 +4,8 @@
 <div class="container py-5">
     <h2 class="mb-4">Transactions</h2>
 
+<a href="{% url 'add_transaction' %}" class="btn btn-success">Add Transaction</a>
+
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body">
             <div class="table-responsive">
@@ -22,7 +24,13 @@
                             <tr>
                                 <td>{{ transaction.date }}</td>
                                 <td>{{ transaction.category.name }}</td>
-                <td class="{% if transaction.category.type == 'income' %}text-success{% else %}text-danger{% endif %}">€{{ transaction.amount|floatformat:2  }}</td>
+                                <td>
+                                {% if transaction.category.type == "income" %}
+                                <span class="text-success fw-bold">+€{{ transaction.amount|floatformat:2 }}</span>
+                                {% else %}
+                                <span class="text-danger fw-bold">-€{{ transaction.amount|floatformat:2 }}</span>
+                                {% endif %}
+                                </td>
                                 <td>{{ transaction.description }}</td>
                                 <td>
                                     <a href="{% url 'edit_transaction' transaction.id %}" class="btn btn-sm btn-outline-primary me-2">
