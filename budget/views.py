@@ -106,4 +106,28 @@ def delete_transaction(request, transaction_id):
 
     return render(request, 'budget/delete_transaction.html', {'transaction': transaction})
 
+def transaction_list(request):
+    transactions = Transaction.objects.filter(user=request.user)
 
+    category = request.GET.get('category')
+    type_filter = request.GET.get('type')
+    month = request.GET.get('month')
+
+    if category:
+        transactions = transactions.filter(category__id=category)
+
+    if type_filter:
+        transactions = transactions.filter(category__type=type_filter)
+
+    if month:
+        transactions = transactions.filter(date__month=month.split('-')[1],
+                                           date__year=month.split('-')[0])
+
+    categories = Category.objects.filter(user=request.user)
+
+    context = {
+        'transactions': transactions,
+        'categories': categories
+    }
+
+    return render(request, 'budget/transactions.html', context)

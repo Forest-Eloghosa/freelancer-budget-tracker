@@ -4,8 +4,41 @@
 <div class="container py-5">
     <h2 class="mb-4">Transactions</h2>
 
-<a href="{% url 'add_transaction' %}" class="btn btn-success">Add Transaction</a>
+<a href="{% url 'add_transaction' %}" class="btn btn-success mb-4">
+    Add Transaction
+</a>
 
+
+<form method="GET" class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <select name="type" class="form-select">
+            <option value="">All Types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select name="category" class="form-select">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <input type="month" name="month" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">
+            Filter
+        </button>
+    </div>
+
+</form>
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body">
             <div class="table-responsive">
