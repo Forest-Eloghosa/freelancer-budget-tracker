@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from .models import Category, Transaction
 from .forms import CategoryForm, TransactionForm
+
 # Create your views here.
+
 
 @login_required
 def dashboard(request):
@@ -29,10 +31,15 @@ def dashboard(request):
 
     return render(request, 'budget/dashboard.html', context)
 
+
 @login_required
 def categories(request):
     categories = Category.objects.filter(user=request.user)
-    return render(request, 'budget/categories.html', {'categories': categories})
+    return render(
+        request,
+        'budget/categories.html',
+        {'categories': categories}
+    )
 
 
 @login_required
@@ -54,6 +61,7 @@ def delete_category(request, category_id):
     category.delete()
     return redirect('categories')
 
+
 @login_required
 def edit_category(request, category_id):
     category = get_object_or_404(Category, id=category_id, user=request.user)
@@ -64,6 +72,7 @@ def edit_category(request, category_id):
         return redirect('categories')
 
     return render(request, 'budget/edit_category.html', {'form': form})
+
 
 @login_required
 def add_transaction(request):
@@ -79,55 +88,73 @@ def add_transaction(request):
 
 
 @login_required
-def transactions(request):
-    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
-    return render(request, 'budget/transactions.html', {'transactions': transactions})
-
-
-@login_required
 def edit_transaction(request, transaction_id):
-    transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
-    form = TransactionForm(request.POST or None, instance=transaction, user=request.user)
+    transaction = get_object_or_404(
+        Transaction,
+        id=transaction_id,
+        user=request.user
+    )
+    form = TransactionForm(
+        request.POST or None,
+        instance=transaction,
+        user=request.user
+    )
 
     if form.is_valid():
         form.save()
         return redirect('transactions')
 
-    return render(request, 'budget/edit_transaction.html', {'form': form})
+    return render(
+        request,
+        'budget/edit_transaction.html',
+        {'form': form}
+    )
 
 
 @login_required
 def delete_transaction(request, transaction_id):
-    transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
+    transaction = get_object_or_404(
+        Transaction,
+        id=transaction_id,
+        user=request.user
+    )
 
     if request.method == 'POST':
         transaction.delete()
         return redirect('transactions')
 
-    return render(request, 'budget/delete_transaction.html', {'transaction': transaction})
+    return render(
+        request,
+        'budget/delete_transaction.html',
+        {'transaction': transaction}
+    )
 
-def transaction_list(request):
-    transactions = Transaction.objects.filter(user=request.user)
+
+@login_required
+def transactions(request):
+    transactions_qs = Transaction.objects.filter(user=request.user)
 
     category = request.GET.get('category')
     type_filter = request.GET.get('type')
     month = request.GET.get('month')
 
     if category:
-        transactions = transactions.filter(category__id=category)
+        transactions_qs = transactions_qs.filter(category__id=category)
 
     if type_filter:
-        transactions = transactions.filter(category__type=type_filter)
+        transactions_qs = transactions_qs.filter(category__type=type_filter)
 
     if month:
-        transactions = transactions.filter(date__month=month.split('-')[1],
-                                           date__year=month.split('-')[0])
-
-    categories = Category.objects.filter(user=request.user)
+        year, month_num = month.split('-')
+        transactions_qs = transactions_qs.filter(
+            date__year=year,
+            date__month=month_num,
+        )
 
     context = {
-        'transactions': transactions,
-        'categories': categories
+        'transactions': transactions_qs.order_by('-date'),
+        'categories': Category.objects.filter(user=request.user),
     }
 
     return render(request, 'budget/transactions.html', context)
+
