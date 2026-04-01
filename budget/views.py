@@ -4,11 +4,12 @@ from django.db.models import Sum
 from .models import Category, Transaction
 from .forms import CategoryForm, TransactionForm
 
-# Create your views here.
-
 
 @login_required
 def dashboard(request):
+    """
+    Display the user's dashboard with totals and recent transactions.
+    """
     transactions = Transaction.objects.filter(user=request.user)
 
     income = transactions.filter(
@@ -34,6 +35,9 @@ def dashboard(request):
 
 @login_required
 def categories(request):
+    """
+    Display all categories created by the logged-in user.
+    """
     categories = Category.objects.filter(user=request.user)
     return render(
         request,
@@ -44,6 +48,9 @@ def categories(request):
 
 @login_required
 def add_category(request):
+    """
+    Allow the user to create a new category.
+    """
     form = CategoryForm(request.POST or None)
 
     if form.is_valid():
@@ -57,6 +64,9 @@ def add_category(request):
 
 @login_required
 def delete_category(request, category_id):
+    """
+    Delete a category belonging to the logged-in user.
+    """
     category = get_object_or_404(Category, id=category_id, user=request.user)
     category.delete()
     return redirect('categories')
@@ -64,6 +74,9 @@ def delete_category(request, category_id):
 
 @login_required
 def edit_category(request, category_id):
+    """
+    Allow the user to edit an existing category.
+    """
     category = get_object_or_404(Category, id=category_id, user=request.user)
     form = CategoryForm(request.POST or None, instance=category)
 
@@ -76,6 +89,9 @@ def edit_category(request, category_id):
 
 @login_required
 def add_transaction(request):
+    """
+    Allow the user to create a new transaction.
+    """
     form = TransactionForm(request.POST or None, user=request.user)
 
     if form.is_valid():
@@ -89,6 +105,9 @@ def add_transaction(request):
 
 @login_required
 def edit_transaction(request, transaction_id):
+    """
+    Allow the user to edit an existing transaction.
+    """
     transaction = get_object_or_404(
         Transaction,
         id=transaction_id,
@@ -113,6 +132,9 @@ def edit_transaction(request, transaction_id):
 
 @login_required
 def delete_transaction(request, transaction_id):
+    """
+    Delete a transaction belonging to the logged-in user.
+    """
     transaction = get_object_or_404(
         Transaction,
         id=transaction_id,
@@ -132,6 +154,10 @@ def delete_transaction(request, transaction_id):
 
 @login_required
 def transactions(request):
+    """
+    Display the user's transactions with optional filters
+    for category, type, and month.
+    """
     transactions_qs = Transaction.objects.filter(user=request.user)
 
     category = request.GET.get('category')

@@ -1,10 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
 
 class Category(models.Model):
+    """
+    Represents a user-created transaction category.
+
+    Categories are used to organise financial records and are
+    classified as either income or expense.
+    """
 
     TYPE_CHOICES = [
         ('income', 'Income'),
@@ -12,19 +16,16 @@ class Category(models.Model):
     ]
 
     name = models.CharField(max_length=100)
-
     type = models.CharField(
         max_length=10,
         choices=TYPE_CHOICES
     )
-
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         null=True,
         blank=True
     )
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -33,6 +34,13 @@ class Category(models.Model):
 
 
 class Transaction(models.Model):
+    """
+    Represents a financial transaction created by a user.
+
+    Each transaction belongs to one user and one category,
+    and stores the amount, date, and optional description.
+    """
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
