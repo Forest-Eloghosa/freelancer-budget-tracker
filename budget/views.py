@@ -1,9 +1,27 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from django.db.models import Sum
 from .models import Category, Transaction
 from .forms import CategoryForm, TransactionForm
 
+def signup_view(request):
+    """
+    Allow new users to sign up for an account.
+    After successful registration, the user is automatically logged in
+    and redirected to the dashboard.
+    """
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('dashboard')
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'registration/signup.html', {'form': form})
 
 @login_required
 def dashboard(request):

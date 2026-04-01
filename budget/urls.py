@@ -33,4 +33,5 @@ urlpatterns = [
         views.delete_transaction,
         name='delete_transaction',
     ),
+    path('signup/', views.signup_view, name='signup'),
 ]
