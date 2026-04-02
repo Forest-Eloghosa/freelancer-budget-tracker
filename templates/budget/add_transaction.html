@@ -6,14 +6,33 @@
 
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body p-4">
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
+     <form method="POST">
+            {% csrf_token %}
 
-                <button type="submit" class="btn btn-success rounded-pill px-4">
-                    Save Transaction
-                </button>
-            </form>
+            <div class="mb-3">
+                <label class="form-label">Category</label>
+                {{ form.category }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Amount</label>
+                {{ form.amount }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                {{ form.date }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+            </div>
+
+            <button type="submit" class="btn btn-success rounded-pill px-4">
+                Save Transaction
+            </button>
+    </form>
         </div>
     </div>
 </div>

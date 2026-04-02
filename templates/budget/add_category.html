@@ -1,16 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container page-content">
+    <h2 class="mb-4">Add Category</h2>
+    <div class="card mt-5">
+            <div class="card-body">
+                
+            <form method="POST">
+                {% csrf_token %}
 
-<h2>Add Category</h2>
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                    {{ form.name }}
+                </div>
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
+                <div class="mb-3">
+                    <label for="{{ form.type.id_for_label }}" class="form-label">Type</label>
+                    {{ form.type }}
+                </div>
 
-    <button type="submit" class="btn btn-success">
-        Save Category
-    </button>
-</form>
-
+                <button type="submit" class="btn btn-success">
+                    Save Category
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
