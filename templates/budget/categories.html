@@ -22,13 +22,15 @@
             <tr>
                 <td>{{ category.name }}</td>
                 <td>{{ category.type }}</td>
-                <td>
+                <td class="d-flex gap-2">
                     <a href="{% url 'edit_category' category.id %}" class="btn btn-primary btn-sm me-2">
                         Edit
                     </a>
-                    <a href="{% url 'delete_category' category.id %}" class="btn btn-danger btn-sm">
-                        Delete
-                    </a>
+                    <a href="{% url 'delete_category' category.id %}" 
+                       class="btn btn-danger btn-sm"
+                       aria-label="Delete category {{ category.name }}">
+                        <i class="fas fa-trash"></i> Delete
+                     </a>
                 </td>
             </tr>
             {% empty %}

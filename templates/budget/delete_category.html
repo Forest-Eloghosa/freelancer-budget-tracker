@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Category | Freelancer Budget Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm border-0 rounded-4 mx-auto" style="max-width: 600px;">
+        <div class="card-body p-4">
+            <h2 class="mb-4 text-danger">Delete Category</h2>
+
+            <p>
+                You are about to delete the category:
+                <strong>{{ category.name }}</strong>
+            </p>
+
+            <div class="alert alert-warning">
+                This action cannot be undone. Any data linked to this category may be lost permanently.
+            </div>
+
+            <form method="POST" class="d-flex gap-3 flex-wrap">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    Yes, Delete Category
+                </button>
+                <a href="{% url 'categories' %}" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

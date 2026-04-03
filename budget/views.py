@@ -1,27 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from django.contrib import messages
 from django.db.models import Sum
 from .models import Category, Transaction
 from .forms import CategoryForm, TransactionForm
 
+
 def signup_view(request):
     """
-    Allow new users to sign up for an account.
-    After successful registration, the user is automatically logged in
-    and redirected to the dashboard.
+    Allow a new user to create an account.
     """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('dashboard')
+            form.save()
+            messages.success(request, 'Account created successfully. Welcome!')
+            return redirect('login')
+        messages.error(request, 'Please correct the errors below.')
     else:
         form = UserCreationForm()
 
     return render(request, 'registration/signup.html', {'form': form})
+
 
 @login_required
 def dashboard(request):
@@ -75,34 +76,46 @@ def add_category(request):
         category = form.save(commit=False)
         category.user = request.user
         category.save()
+        messages.success(request, 'Category added successfully.')
         return redirect('categories')
 
     return render(request, 'budget/add_category.html', {'form': form})
 
 
 @login_required
-def delete_category(request, category_id):
-    """
-    Delete a category belonging to the logged-in user.
-    """
-    category = get_object_or_404(Category, id=category_id, user=request.user)
-    category.delete()
-    return redirect('categories')
-
-
-@login_required
 def edit_category(request, category_id):
     """
-    Allow the user to edit an existing category.
+    Allow the user to edit one of their categories.
     """
     category = get_object_or_404(Category, id=category_id, user=request.user)
     form = CategoryForm(request.POST or None, instance=category)
 
     if form.is_valid():
         form.save()
+        messages.success(request, 'Category updated successfully.')
         return redirect('categories')
 
     return render(request, 'budget/edit_category.html', {'form': form})
+
+
+@login_required
+def delete_category(request, category_id):
+    """
+    Delete a category belonging to the logged-in user
+    after confirmation.
+    """
+    category = get_object_or_404(Category, id=category_id, user=request.user)
+
+    if request.method == 'POST':
+        category.delete()
+        messages.success(request, 'Category deleted successfully.')
+        return redirect('categories')
+
+    return render(
+        request,
+        'budget/delete_category.html',
+        {'category': category}
+    )
 
 
 @login_required
@@ -116,6 +129,7 @@ def add_transaction(request):
         transaction = form.save(commit=False)
         transaction.user = request.user
         transaction.save()
+        messages.success(request, 'Transaction added successfully.')
         return redirect('transactions')
 
     return render(request, 'budget/add_transaction.html', {'form': form})
@@ -124,7 +138,7 @@ def add_transaction(request):
 @login_required
 def edit_transaction(request, transaction_id):
     """
-    Allow the user to edit an existing transaction.
+    Edit a transaction belonging to the logged-in user.
     """
     transaction = get_object_or_404(
         Transaction,
@@ -139,6 +153,7 @@ def edit_transaction(request, transaction_id):
 
     if form.is_valid():
         form.save()
+        messages.success(request, 'Transaction updated successfully.')
         return redirect('transactions')
 
     return render(
@@ -161,6 +176,7 @@ def delete_transaction(request, transaction_id):
 
     if request.method == 'POST':
         transaction.delete()
+        messages.success(request, 'Transaction deleted successfully.')
         return redirect('transactions')
 
     return render(
@@ -201,4 +217,3 @@ def transactions(request):
     }
 
     return render(request, 'budget/transactions.html', context)
-

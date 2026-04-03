@@ -86,8 +86,12 @@ body {
 }
 
 .nav-right a {
-    color: #10b981;
+    color: #ffffff;
     margin-left: 10px;
+}
+
+.nav-right a:hover {
+    color: #10b981;
 }
 
 .navbar {
