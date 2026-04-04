@@ -11,36 +11,46 @@
         </a>
     </div>
 
-    <form method="GET" class="row g-3 mb-4">
-        <div class="col-md-3">
-            <select name="type" class="form-select">
-                <option value="">All Types</option>
-                <option value="income" {% if request.GET.type == "income" %}selected{% endif %}>Income</option>
-                <option value="expense" {% if request.GET.type == "expense" %}selected{% endif %}>Expense</option>
-            </select>
-        </div>
+        <form method="GET" class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label for="type" class="form-label">Transaction Type</label>
+                <select id="type" name="type" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="income" {% if request.GET.type == "income" %}selected{% endif %}>Income</option>
+                    <option value="expense" {% if request.GET.type == "expense" %}selected{% endif %}>Expense</option>
+                </select>
+            </div>
 
-        <div class="col-md-3">
-            <select name="category" class="form-select">
-                <option value="">All Categories</option>
-                {% for category in categories %}
-                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
-                        {{ category.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="col-md-3">
+                <label for="category" class="form-label">Category</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}"
+                            {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="col-md-3">
-            <input type="month" name="month" class="form-control" value="{{ request.GET.month }}">
-        </div>
+            <div class="col-md-3">
+                <label for="month" class="form-label">Month</label>
+                <input
+                    type="month"
+                    id="month"
+                    name="month"
+                    class="form-control"
+                    value="{{ request.GET.month }}"
+                >
+            </div>
 
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-primary">
-                Filter
-            </button>
-        </div>
-    </form>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">
+                    Filter
+                </button>
+            </div>
+        </form>
 
     <!-- Desktop / tablet table -->
     <div class="desktop-table">
@@ -71,7 +81,9 @@
                                 </td>
                                 <td>{{ transaction.description }}</td>
                                 <td class="d-flex gap-2">
-                                    <a href="{% url 'edit_transaction' transaction.id %}" class="btn btn-outline-primary btn-sm me-2">
+                                    <a href="{% url 'edit_transaction' transaction.id %}"
+                                    class="btn btn-outline-primary btn-sm me-2"
+                                    aria-label="Edit transaction {{ transaction.description }}">
                                         Edit
                                     </a>
                                     <a href="{% url 'delete_transaction' transaction.id %}" 
@@ -115,7 +127,9 @@
                 <p><strong>Description:</strong> {{ transaction.description }}</p>
 
                 <div class="mt-3">
-                    <a href="{% url 'edit_transaction' transaction.id %}" class="btn btn-outline-primary btn-sm me-2">
+                    <a href="{% url 'edit_transaction' transaction.id %}"
+                    class="btn btn-outline-primary btn-sm me-2"
+                    aria-label="Edit transaction {{ transaction.description }}">
                         Edit
                     </a>
                     <a href="{% url 'delete_transaction' transaction.id %}" 
