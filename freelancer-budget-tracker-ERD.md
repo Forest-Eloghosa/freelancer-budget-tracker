@@ -33,13 +33,15 @@ In this ERD:
 - The `users` table represents Django’s built-in authentication model,
 which manages registered users of the application.
 
+Django’s built-in authentication system ensures secure user management and access control throughout the application, protecting user-specific financial data.
+
 - The `category` table categorizes transactions as either income or
 expense types and links them to a specific user. This ensures that
 each user manages their own financial categories independently.
 
-- The `transaction` table records  individual transactions, linking them to both the user and the category they belong to. Each transaction includes details such as the amount, date, and description.
+- The `transaction` table records individual transactions linking them to both the user and the category they belong to. Each transaction includes details such as the amount, date, and description.
 
-This structure allows for efficient tracking and management of budgets, enabling users to categorize their income and expenses effectively.
+This structure enables efficient tracking and management of financial data, allowing users to categorise income and expenses while maintaining clear data relationships.
 
 
 ## Entity Relationship Diagram (ERD)
@@ -51,7 +53,8 @@ and organization.
 
 ![freelancer-budget-tracker-ERD](static/images/freelancer-budget-tracker-ERD.png "freelancer-budget-tracker-ERD")
 
-# Relationship Summary:
+## Relationship Summary
+
 Relationships between entities in the Freelancer Budget Tracker application are as follows:
 - A User can create many Categories.
 - A User can create many Transactions.
