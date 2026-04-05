@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.db.models import Sum
 from .models import Category, Transaction
-from .forms import CategoryForm, TransactionForm
+from .forms import CategoryForm, TransactionForm, BootstrapUserCreationForm
 
 
 def signup_view(request):
@@ -12,14 +11,14 @@ def signup_view(request):
     Allow a new user to create an account.
     """
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = BootstrapUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Account created successfully. Welcome!')
             return redirect('login')
         messages.error(request, 'Please correct the errors below.')
     else:
-        form = UserCreationForm()
+        form = BootstrapUserCreationForm()
 
     return render(request, 'registration/signup.html', {'form': form})
 

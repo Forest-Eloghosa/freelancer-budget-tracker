@@ -11,9 +11,9 @@
     <table class="table mt-4">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Action</th>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Action</th>
             </tr>
         </thead>
 
@@ -23,7 +23,9 @@
                 <td>{{ category.name }}</td>
                 <td>{{ category.type }}</td>
                 <td class="d-flex gap-2">
-                    <a href="{% url 'edit_category' category.id %}" class="btn btn-primary btn-sm me-2">
+                    <a href="{% url 'edit_category' category.id %}"
+                       class="btn btn-primary btn-sm me-2"
+                       aria-label="Edit category {{ category.name }}">
                         Edit
                     </a>
                     <a href="{% url 'delete_category' category.id %}" 

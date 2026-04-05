@@ -1,14 +1,62 @@
 {% extends "base.html" %}
 
+{% block title %}Edit Transaction | Freelancer Budget Tracker{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <h2 class="mb-4">Edit Transaction</h2>
 
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body p-4">
+
+            {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    Please correct the errors below.
+                </div>
+            {% endif %}
+
             <form method="POST">
                 {% csrf_token %}
-                {{ form.as_p }}
+
+                <div class="mb-3">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="invalid-feedback d-block" role="alert">
+                            {{ form.category.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.amount.id_for_label }}" class="form-label">Amount</label>
+                    {{ form.amount }}
+                    {% if form.amount.errors %}
+                        <div class="invalid-feedback d-block" role="alert">
+                            {{ form.amount.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+                    {{ form.date }}
+                    {% if form.date.errors %}
+                        <div class="invalid-feedback d-block" role="alert">
+                            {{ form.date.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="invalid-feedback d-block" role="alert">
+                            {{ form.description.errors }}
+                        </div>
+                    {% endif %}
+                </div>
 
                 <button type="submit" class="btn btn-primary rounded-pill px-4">
                     Update Transaction
