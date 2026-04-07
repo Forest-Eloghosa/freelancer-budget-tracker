@@ -179,8 +179,7 @@ Users receive confirmation when:
 - Creating an account
 - Adding/editing/deleting categories
 - Adding/editing/deleting transactions
-
-Messages automatically dismiss after a short delay while still allowing manual dismissal by the user.
+- Messages automatically dismiss after a short delay while still allowing manual dismissal by the user.
 ---
 
 ## Safe Delete Confirmation
