@@ -5,23 +5,35 @@
 {% block content %}
 <div class="container py-5">
     <div class="text-center mb-5">
-<img src="{% static 'images/logo.png' %}"
-     alt="Freelancer Budget Tracker logo"
-     class="app-logo"
-     width="120"
-     height="120">
-<h1 class="fw-bold">Freelancer Budget Tracker</h1>
+        <img src="{% static 'images/logo.png' %}"
+             alt="Freelancer Budget Tracker logo"
+             class="app-logo"
+             width="120"
+             height="120">
+        <h1 class="fw-bold">Freelancer Budget Tracker</h1>
         <p class="text-muted">
             Track your income and expenses with ease.
         </p>
     </div>
+
+    {% if categories_count == 0 %}
+    <div class="alert alert-info text-center mb-4" role="alert">
+        <h2 class="h5 mb-2">Get started by adding a category</h2>
+        <p class="mb-3">
+            You need to create at least one category before you can add a transaction.
+        </p>
+        <a href="{% url 'add_category' %}" class="btn btn-primary">
+            Add Category
+        </a>
+    </div>
+    {% endif %}
 
     <div class="row g-4 mb-5">
         <div class="col-md-4">
             <div class="card shadow-sm border-0 h-100 rounded-4">
                 <div class="card-body text-center">
                     <h2 class="h5 mb-3">Total Income</h2>
-                    <p class="fs-3 fw-bold text-success mb-0">€{{ income|floatformat:2  }}</p>
+                    <p class="fs-3 fw-bold text-success mb-0">€{{ income|floatformat:2 }}</p>
                 </div>
             </div>
         </div>
@@ -30,7 +42,7 @@
             <div class="card shadow-sm border-0 h-100 rounded-4">
                 <div class="card-body text-center">
                     <h2 class="h5 mb-3">Total Expenses</h2>
-                    <p class="fs-3 fw-bold text-danger mb-0">€{{ expenses|floatformat:2  }}</p>
+                    <p class="fs-3 fw-bold text-danger mb-0">€{{ expenses|floatformat:2 }}</p>
                 </div>
             </div>
         </div>
@@ -39,37 +51,43 @@
             <div class="card shadow-sm border-0 h-100 rounded-4">
                 <div class="card-body text-center">
                     <h2 class="h5 mb-3">Balance</h2>
-                    <p class="fs-3 fw-bold text-primary mb-0">€{{ balance|floatformat:2  }}</p>
+                    <p class="fs-3 fw-bold text-primary mb-0">€{{ balance|floatformat:2 }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Chart Section -->
-<div class="card shadow-sm border-0 rounded-4 mb-5">
-    <div class="card-body">
-        <h2 class="h4 mb-4 text-center">Income vs Expenses</h2>
+    <div class="card shadow-sm border-0 rounded-4 mb-5">
+        <div class="card-body">
+            <h2 class="h4 mb-4 text-center">Income vs Expenses</h2>
 
-        {% if income == 0 and expenses == 0 %}
-            <p class="text-center text-muted mt-4">
-                No financial data yet. Add a transaction to see insights.
-            </p>
-        {% else %}
-            <div style="max-width: 400px; margin: 0 auto;">
-                <canvas id="financeChart"></canvas>
-            </div>
-        {% endif %}
+            {% if income == 0 and expenses == 0 %}
+                <p class="text-center text-muted mt-4">
+                    No financial data yet. Add a transaction to see insights.
+                </p>
+            {% else %}
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <canvas id="financeChart"></canvas>
+                </div>
+            {% endif %}
+        </div>
     </div>
-</div>
 
-<div class="dashboard-actions d-flex flex-column align-items-center gap-3 my-4">
-    <a href="{% url 'add_transaction' %}" class="btn btn-success px-4 py-2">
-        Add Transaction
-    </a>
-    <a href="{% url 'transactions' %}" class="btn btn-outline-secondary px-4 py-2">
-        View Transactions
-    </a>
-</div>
+    <div class="dashboard-actions d-flex flex-column align-items-center gap-3 my-4">
+        {% if categories_count == 0 %}
+            <a href="{% url 'add_category' %}" class="btn btn-primary px-4 py-2">
+                Add Category
+            </a>
+        {% else %}
+            <a href="{% url 'add_transaction' %}" class="btn btn-success px-4 py-2">
+                Add Transaction
+            </a>
+        {% endif %}
+
+        <a href="{% url 'transactions' %}" class="btn btn-outline-secondary px-4 py-2">
+            View Transactions
+        </a>
+    </div>
 
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body">
@@ -91,20 +109,26 @@
                             <td>{{ transaction.category.name }}</td>
                             <td>
                                 {% if transaction.category.type == "income" %}
-                                <span class="text-success fw-bold">+€{{ transaction.amount|floatformat:2 }}</span>
+                                    <span class="text-success fw-bold">+€{{ transaction.amount|floatformat:2 }}</span>
                                 {% else %}
-                                <span class="text-danger fw-bold">-€{{ transaction.amount|floatformat:2 }}</span>
+                                    <span class="text-danger fw-bold">-€{{ transaction.amount|floatformat:2 }}</span>
                                 {% endif %}
                             </td>
                             <td>{{ transaction.description }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                        <td colspan="4" class="text-center text-muted">
-                        <a href="{% url 'add_transaction' %}" class="btn btn-success">
-                        Add your first transaction
-                        </a>
-                        </td>
+                            <td colspan="4" class="text-center text-muted">
+                                {% if categories_count == 0 %}
+                                    <a href="{% url 'add_category' %}" class="btn btn-primary">
+                                        Add your first category
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'add_transaction' %}" class="btn btn-success">
+                                        Add your first transaction
+                                    </a>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -115,7 +139,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
 const income = Number('{{ income|default:"0"|escapejs }}');
 const expenses = Number('{{ expenses|default:"0"|escapejs }}');
@@ -129,10 +152,7 @@ if (ctx) {
             labels: ['Income', 'Expenses'],
             datasets: [{
                 data: [income, expenses],
-                backgroundColor: [
-                    '#10B981',
-                    '#EF4444'
-                ],
+                backgroundColor: ['#10B981', '#EF4444'],
                 borderWidth: 1
             }]
         },

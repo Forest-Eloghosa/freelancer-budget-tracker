@@ -71,6 +71,7 @@ Manual testing was conducted to verify all core functionality.
 | Filter by Month | Filter by month | Applied month filter | Pass |
 | Combined Filters | Combine multiple filters | Verified correct filtered results | Pass |
 | Dashboard Summary | Totals update dynamically | Verified calculations update correctly | Pass |
+| Creating transaction without category | System should prevent or fail safely | Verified that transactions require a category before creation | Pass |
 
 ---
 

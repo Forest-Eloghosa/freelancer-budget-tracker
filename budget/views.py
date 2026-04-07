@@ -27,7 +27,8 @@ def signup_view(request):
 @login_required
 def dashboard(request):
     """
-    Display the user's dashboard with totals and recent transactions.
+    Display the user's dashboard with totals, recent transactions,
+    and guidance for first-time users.
     """
     transactions = Transaction.objects.filter(user=request.user)
 
@@ -41,12 +42,14 @@ def dashboard(request):
 
     balance = income - expenses
     recent_transactions = transactions.order_by('-date')[:5]
+    categories_count = Category.objects.filter(user=request.user).count()
 
     context = {
         'income': float(income),
         'expenses': float(expenses),
         'balance': float(balance),
         'recent_transactions': recent_transactions,
+        'categories_count': categories_count,
     }
 
     return render(request, 'budget/dashboard.html', context)
