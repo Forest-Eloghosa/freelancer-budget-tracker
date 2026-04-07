@@ -1,12 +1,16 @@
 # Testing
 
-This section outlines the testing process carried out during the development of the Freelancer Budget Tracker application. Testing was performed to ensure that all features function correctly, the user experience is consistent, and the application meets expected standards.
+This section outlines the testing process carried out during the development of the Freelancer Budget Tracker application. 
+
+Testing was carried out to ensure that all features function correctly, the user experience is consistent across devices, and the application meets expected performance, accessibility, and security standards.
 
 ---
 
 ## Code Validation
 
 The application was validated using industry-standard tools to ensure clean, accessible, and standards-compliant code.
+
+Validation was performed on both frontend and backend components to ensure compliance with web standards and best practices.
 
 Return back to the [README.md](README.md) file.
 
@@ -125,7 +129,6 @@ A Lighthouse audit was performed on the deployed application to evaluate perform
 
 The results demonstrate that the application meets modern web standards for performance, accessibility, and usability, with only minor non-critical recommendations identified.
 
-
 | Page |  Screenshot | Result |
 |----------|----------|-------------|
 | Login | ![Login](static/test_images/login_lighthouse_report.png) |Pass |
@@ -238,13 +241,13 @@ Improvements include:
 
 ## Performance Observations
 
- The application demonstrates efficient performance with fast load times, responsive interactions, and optimised database queries for the current scale of data.
+The application demonstrates efficient performance, with fast load times, responsive interactions, and optimised database queries for the current scale of data.
   
 
 ---
 
 ## Final Testing Summary
 
-All features were tested successfully.
+All features were tested successfully with no critical issues identified.
 
-The application is stable, responsive, and ready for deployment.
+The application is stable, responsive, and meets the requirements for deployment.
