@@ -92,7 +92,8 @@ The password reset flow was tested using Django’s console email backend.
 
 | Feature | Expected Behaviour | Result |
 |--------|------------------|--------|
-| Password reset request | Reset link generated | Pass |
+| Password reset request | ![Reset link generated](static/test_images/password_reset_request.png) | Pass |
+
 
 ---
 
