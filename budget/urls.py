@@ -2,8 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.dashboard, name='dashboard'),
+    path('', views.home, name='home'),
 
+    path('dashboard/', views.dashboard, name='dashboard'),
+    
     path('categories/', views.categories, name='categories'),
     
     path(
@@ -53,4 +55,10 @@ urlpatterns = [
     'checkout-success/',
     views.checkout_success,
     name='checkout_success'),
+
+    path(
+        'manage-subscription/',
+        views.manage_subscription,
+        name='manage_subscription'
+    ),
 ]

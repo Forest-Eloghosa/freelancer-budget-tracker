@@ -1,43 +1,141 @@
 {% extends "base.html" %}
 
-{% block title %}Premium Upgrade{% endblock %}
+{% block title %}Premium Access | Freelancer Budget Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-5 text-center">
+<div class="container py-5">
 
-    <h1 class="fw-bold mb-4">
-        Upgrade to Premium
-    </h1>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-    <p class="lead text-muted mb-4">
-        Unlock premium support for your budgeting journey.
-    </p>
+            <div class="card shadow-sm border-0 rounded-4">
 
-    <div class="card shadow-sm border-0 rounded-4 p-5 mx-auto"
-         style="max-width: 500px;">
+                <div class="card-body p-5 text-center">
 
-        <h2 class="mb-3">Premium Access</h2>
+                    {% if profile.is_premium %}
 
-        <p class="text-muted">
-            One-time payment using Stripe test checkout.
-        </p>
+                        <h1 class="fw-bold text-success mb-3">
+                            Premium Already Active
+                        </h1>
 
-        <h3 class="fw-bold mb-4">
-            €5.00
-        </h3>
+                        <p class="text-muted mb-4">
+                            You currently have access to all premium budgeting features.
+                        </p>
 
-        <form action="{% url 'create_checkout_session' %}"
-              method="POST">
+                        <!-- Premium Features -->
+                        <div class="row g-3 mb-5">
 
-            {% csrf_token %}
+                            <div class="col-md-4">
+                                <div class="border rounded-4 p-3 h-100">
+                                    <h2 class="h5">Advanced Analytics</h2>
 
-            <button type="submit"
-                    class="btn btn-success btn-lg px-5">
-                Pay with Stripe
-            </button>
+                                    <p class="text-muted small mb-0">
+                                        View deeper insights into your income and expenses.
+                                    </p>
+                                </div>
+                            </div>
 
-        </form>
+                            <div class="col-md-4">
+                                <div class="border rounded-4 p-3 h-100">
+                                    <h2 class="h5">Export Transactions</h2>
 
+                                    <p class="text-muted small mb-0">
+                                        Download and store your financial records easily.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="border rounded-4 p-3 h-100">
+                                    <h2 class="h5">Premium Insights</h2>
+
+                                    <p class="text-muted small mb-0">
+                                        Access enhanced budgeting recommendations and reports.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <a href="{% url 'manage_subscription' %}"
+                           class="btn btn-outline-danger btn-lg px-4 py-2">
+                            Manage Subscription
+                        </a>
+
+                    {% else %}
+
+                        <h1 class="fw-bold mb-3">
+                            Upgrade to Premium
+                        </h1>
+
+                        <p class="text-muted mb-4">
+                            Unlock advanced budgeting tools and premium financial insights.
+                        </p>
+
+                        <!-- Premium Features -->
+                        <div class="row g-3 mb-5">
+
+                            <div class="col-md-4">
+                                <div class="border rounded-4 p-3 h-100">
+                                    <h2 class="h5">Advanced Analytics</h2>
+
+                                    <p class="text-muted small mb-0">
+                                        Understand spending patterns with enhanced analytics.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="border rounded-4 p-3 h-100">
+                                    <h2 class="h5">Export Transactions</h2>
+
+                                    <p class="text-muted small mb-0">
+                                        Export financial reports for personal records.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="border rounded-4 p-3 h-100">
+                                    <h2 class="h5">Premium Insights</h2>
+
+                                    <p class="text-muted small mb-0">
+                                        Receive additional budgeting insights and summaries.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+                            <span class="display-5 fw-bold">
+                                €5
+                            </span>
+
+                            <span class="text-muted">
+                                one-time upgrade
+                            </span>
+                        </div>
+
+                        <form action="{% url 'create_checkout_session' %}"
+                              method="POST">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="btn btn-success btn-lg px-5 py-3">
+                                Upgrade with Stripe
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
     </div>
 
 </div>

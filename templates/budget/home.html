@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Freelancer Budget Tracker
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section text-center py-5">
+
+    <div class="container">
+
+        <img src="{% static 'images/logo.png' %}"
+             alt="Freelancer Budget Tracker Logo"
+             class="mb-4"
+             style="max-width: 140px;">
+
+        <h1 class="display-4 fw-bold mb-3">
+            Take Control of Your Freelance Finances
+        </h1>
+
+        <p class="lead text-muted mb-4">
+            Track income, manage expenses, monitor transactions,
+            and unlock premium budgeting insights.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+
+            <a href="{% url 'signup' %}"
+               class="btn btn-success btn-lg px-5">
+                Get Started
+            </a>
+
+            <a href="{% url 'premium' %}"
+               class="btn btn-outline-success btn-lg px-5">
+                Explore Premium Features
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="container py-5">
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card h-100 bg-dark text-light border-0 shadow">
+
+                <div class="card-body text-center">
+
+                    <h3 class="mb-3">
+                        Income Tracking
+                    </h3>
+
+                    <p>
+                        Keep track of freelance payments,
+                        invoices, and revenue streams.
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 bg-dark text-light border-0 shadow">
+
+                <div class="card-body text-center">
+
+                    <h3 class="mb-3">
+                        Expense Management
+                    </h3>
+
+                    <p>
+                        Monitor spending and stay in control
+                        of your financial goals.
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 bg-dark text-light border-0 shadow">
+
+                <div class="card-body text-center">
+
+                    <h3 class="mb-3">
+                        Premium Analytics
+                    </h3>
+
+                    <p>
+                        Upgrade with Stripe to unlock
+                        premium budgeting tools and insights.
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

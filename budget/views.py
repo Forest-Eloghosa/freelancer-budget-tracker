@@ -5,10 +5,17 @@ from django.contrib import messages
 from django.db.models import Sum
 from .models import Category, Transaction
 from .forms import CategoryForm, TransactionForm
+from .models import Category, Transaction, Profile
 
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+def home(request):
+    """
+    Display landing page for new users to better understand the application they just discovered.
+    """
+    return render(request, 'budget/home.html')
 
 
 def signup_view(request):
@@ -47,6 +54,7 @@ def dashboard(request):
     balance = income - expenses
     recent_transactions = transactions.order_by('-date')[:5]
     categories_count = Category.objects.filter(user=request.user).count()
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
     context = {
         'income': float(income),
@@ -54,6 +62,8 @@ def dashboard(request):
         'balance': float(balance),
         'recent_transactions': recent_transactions,
         'categories_count': categories_count,
+        'is_premium': profile.is_premium,
+        'profile': profile,
     }
 
     return render(request, 'budget/dashboard.html', context)
@@ -228,12 +238,15 @@ def transactions(request):
 @login_required
 def premium(request):
     """
-    Display premium upgrade page.
+    Display premium page for the logged-in user intrested in upgrading.
     """
+    profile = request.user.profile
+
     return render(
         request,
         'budget/premium.html',
         {
+            'profile': profile,
             'stripe_public_key': settings.STRIPE_PUBLIC_KEY
         }
     )
@@ -242,16 +255,37 @@ def premium(request):
 @login_required
 def checkout_success(request):
     """
-    Display successful payment page.
+    Activate premium membership after user payment has been processed successfully.
     """
-    return render(request, 'budget/checkout_success.html')
+    profile = request.user.profile
+    profile.is_premium = True
+    profile.save()
+
+    messages.success(
+        request,
+        'Premium membership activated successfully.'
+    )
+
+    return render(
+        request,
+        'budget/checkout_success.html'
+    )
 
 
 @login_required
 def create_checkout_session(request):
     """
-    Create Stripe checkout session.
+    Create Stripe checkout session when the user initiates the payment.
     """
+    profile = request.user.profile
+
+    if profile.is_premium:
+            messages.info(
+                request,
+                'You already have Premium access.'
+            )
+            return redirect('dashboard')
+    
     checkout_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         mode='payment',
@@ -276,3 +310,30 @@ def create_checkout_session(request):
     )
 
     return redirect(checkout_session.url, code=303)
+
+
+@login_required
+def manage_subscription(request):
+    """
+    Allow users to manage premium subscription.
+    """
+    profile = request.user.profile
+
+    if request.method == 'POST':
+        profile.is_premium = False
+        profile.save()
+
+        messages.success(
+            request,
+            'Premium membership cancelled.'
+        )
+
+        return redirect('dashboard')
+
+    return render(
+        request,
+        'budget/manage_subscription.html',
+        {
+            'profile': profile
+        }
+    )

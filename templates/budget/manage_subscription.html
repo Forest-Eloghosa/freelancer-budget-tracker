@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Subscription{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+
+    <h1 class="fw-bold mb-4">
+        Manage Subscription
+    </h1>
+
+    {% if profile.is_premium %}
+
+        <div class="card shadow-sm border-0 rounded-4 p-5 mx-auto"
+             style="max-width: 500px;">
+
+            <h2 class="text-success mb-3">
+                Premium Active
+            </h2>
+
+            <p class="text-muted">
+                You currently have premium access.
+            </p>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-danger mt-3">
+                    Cancel Premium
+                </button>
+
+            </form>
+
+        </div>
+
+    {% else %}
+
+        <p class="text-muted">
+            You do not currently have premium access.
+        </p>
+
+        <a href="{% url 'premium' %}"
+           class="btn btn-primary">
+            Upgrade Now
+        </a>
+
+    {% endif %}
+
+</div>
+{% endblock %}
