@@ -6,6 +6,10 @@ from django.db.models import Sum
 from .models import Category, Transaction
 from .forms import CategoryForm, TransactionForm
 
+import stripe
+from django.conf import settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 def signup_view(request):
     """
@@ -220,3 +224,55 @@ def transactions(request):
     }
 
     return render(request, 'budget/transactions.html', context)
+
+@login_required
+def premium(request):
+    """
+    Display premium upgrade page.
+    """
+    return render(
+        request,
+        'budget/premium.html',
+        {
+            'stripe_public_key': settings.STRIPE_PUBLIC_KEY
+        }
+    )
+
+
+@login_required
+def checkout_success(request):
+    """
+    Display successful payment page.
+    """
+    return render(request, 'budget/checkout_success.html')
+
+
+@login_required
+def create_checkout_session(request):
+    """
+    Create Stripe checkout session.
+    """
+    checkout_session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        mode='payment',
+        line_items=[
+            {
+                'price_data': {
+                    'currency': 'eur',
+                    'product_data': {
+                        'name': 'Premium Budget Tracker Access',
+                    },
+                    'unit_amount': 500,
+                },
+                'quantity': 1,
+            }
+        ],
+        success_url=request.build_absolute_uri(
+            '/checkout-success/'
+        ),
+        cancel_url=request.build_absolute_uri(
+            '/premium/'
+        ),
+    )
+
+    return redirect(checkout_session.url, code=303)

@@ -5,16 +5,19 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
 
     path('categories/', views.categories, name='categories'),
+    
     path(
         'add-category/',
         views.add_category,
         name='add_category',
     ),
+    
     path(
         'delete-category/<int:category_id>/',
         views.delete_category,
         name='delete_category',
     ),
+    
     path(
         'edit-category/<int:category_id>/',
         views.edit_category,
@@ -22,16 +25,32 @@ urlpatterns = [
     ),
 
     path('add/', views.add_transaction, name='add_transaction'),
+    
     path('transactions/', views.transactions, name='transactions'),
+    
     path(
         'edit-transaction/<int:transaction_id>/',
         views.edit_transaction,
         name='edit_transaction',
     ),
+    
     path(
         'delete-transaction/<int:transaction_id>/',
         views.delete_transaction,
         name='delete_transaction',
     ),
+    
     path('signup/', views.signup_view, name='signup'),
+
+    path('premium/', views.premium, name='premium'),
+
+    path(
+    'create-checkout-session/',
+    views.create_checkout_session,
+    name='create_checkout_session'),
+
+    path(
+    'checkout-success/',
+    views.checkout_success,
+    name='checkout_success'),
 ]

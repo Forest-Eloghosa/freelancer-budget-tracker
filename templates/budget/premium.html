@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Premium Upgrade{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+
+    <h1 class="fw-bold mb-4">
+        Upgrade to Premium
+    </h1>
+
+    <p class="lead text-muted mb-4">
+        Unlock premium support for your budgeting journey.
+    </p>
+
+    <div class="card shadow-sm border-0 rounded-4 p-5 mx-auto"
+         style="max-width: 500px;">
+
+        <h2 class="mb-3">Premium Access</h2>
+
+        <p class="text-muted">
+            One-time payment using Stripe test checkout.
+        </p>
+
+        <h3 class="fw-bold mb-4">
+            €5.00
+        </h3>
+
+        <form action="{% url 'create_checkout_session' %}"
+              method="POST">
+
+            {% csrf_token %}
+
+            <button type="submit"
+                    class="btn btn-success btn-lg px-5">
+                Pay with Stripe
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+{% endblock %}
