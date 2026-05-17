@@ -240,7 +240,7 @@ def premium(request):
     """
     Display premium page for the logged-in user intrested in upgrading.
     """
-    profile = request.user.profile
+    profile, _ = Profile.objects.get_or_create(user=request.user)
 
     return render(
         request,
@@ -257,7 +257,7 @@ def checkout_success(request):
     """
     Activate premium membership after user payment has been processed successfully.
     """
-    profile = request.user.profile
+    profile, _ = Profile.objects.get_or_create(user=request.user)
     profile.is_premium = True
     profile.save()
 
@@ -277,7 +277,7 @@ def create_checkout_session(request):
     """
     Create Stripe checkout session when the user initiates the payment.
     """
-    profile = request.user.profile
+    profile, _ = Profile.objects.get_or_create(user=request.user)
 
     if profile.is_premium:
             messages.info(
@@ -317,7 +317,7 @@ def manage_subscription(request):
     """
     Allow users to manage premium subscription.
     """
-    profile = request.user.profile
+    profile, _ = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         profile.is_premium = False
