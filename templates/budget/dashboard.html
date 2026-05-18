@@ -122,38 +122,44 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="border rounded-4 p-4 h-100">
-                            <h3 class="h5 mb-3">
-                                Export Transactions
-                            </h3>
+                <div class="col-md-4">
+                    <div class="border rounded-4 p-4 h-100">
 
-                            <p class="text-muted">
-                                Download and manage your transaction history for reporting and budgeting.
-                            </p>
+                        <h3 class="h5 mb-3">
+                            Export Transactions
+                        </h3>
 
-                            <button class="btn btn-success">
-                                Export CSV
-                            </button>
-                        </div>
+                        <p class="text-muted">
+                            Download and manage your transaction history
+                            for reporting and budgeting.
+                        </p>
+
+                        <a href="{% url 'export_transactions' %}"
+                        class="btn btn-success">
+                            Export CSV
+                        </a>
+
                     </div>
+                </div>
 
-                    <div class="col-md-4">
-                        <div class="border rounded-4 p-4 h-100">
-                            <h3 class="h5 mb-3">
-                                Premium Insights
-                            </h3>
+                <div class="col-md-4">
+                    <div class="border rounded-4 p-4 h-100">
 
-                            <p class="text-muted">
-                                Access premium budgeting recommendations tailored to your activity.
-                            </p>
+                        <h3 class="h5 mb-3">
+                            Premium Insights
+                        </h3>
 
-                            <button class="btn btn-success">
-                                View Insights
-                            </button>
-                        </div>
+                        <p class="text-muted">
+                            Access premium budgeting recommendations
+                            tailored to your activity.
+                        </p>
+
+                        <a href="{% url 'premium_insights' %}"
+                        class="btn btn-success">
+                            View Insights
+                        </a>
+
                     </div>
-
                 </div>
 
             {% else %}

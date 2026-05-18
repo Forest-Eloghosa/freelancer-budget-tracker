@@ -7,13 +7,17 @@ from .models import Category, Transaction
 from .forms import CategoryForm, TransactionForm
 from .models import Category, Transaction, Profile
 
+import csv
+from django.http import HttpResponse
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+
 def home(request):
     """
-    Display landing page for new users to better understand the application they just discovered.
+Display landing page for new users to
+better understand the application they just discovered.
     """
     return render(request, 'budget/home.html')
 
@@ -206,8 +210,8 @@ def delete_transaction(request, transaction_id):
 @login_required
 def transactions(request):
     """
-    Display the user's transactions with optional filters
-    for category, type, and month.
+Display the user's transactions with optional filters
+for category, type, and month.
     """
     transactions_qs = Transaction.objects.filter(user=request.user)
 
@@ -235,10 +239,11 @@ def transactions(request):
 
     return render(request, 'budget/transactions.html', context)
 
+
 @login_required
 def premium(request):
     """
-    Display premium page for the logged-in user intrested in upgrading.
+    Display premium page for the logged-in user interested in upgrading.
     """
     profile, _ = Profile.objects.get_or_create(user=request.user)
 
@@ -255,7 +260,7 @@ def premium(request):
 @login_required
 def checkout_success(request):
     """
-    Activate premium membership after user payment has been processed successfully.
+Activate premium membership after user payment has been processed successfully.
     """
     profile, _ = Profile.objects.get_or_create(user=request.user)
     profile.is_premium = True
@@ -279,35 +284,36 @@ def create_checkout_session(request):
     """
     profile, _ = Profile.objects.get_or_create(user=request.user)
 
+
     if profile.is_premium:
-            messages.info(
-                request,
-                'You already have Premium access.'
-            )
-            return redirect('dashboard')
-    
+        messages.info(
+            request,
+            'You already have Premium access.'
+        )
+        return redirect('dashboard')
+
     checkout_session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        mode='payment',
-        line_items=[
-            {
-                'price_data': {
-                    'currency': 'eur',
-                    'product_data': {
-                        'name': 'Premium Budget Tracker Access',
+            payment_method_types=['card'],
+            mode='payment',
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'eur',
+                        'product_data': {
+                            'name': 'Premium Budget Tracker Access',
+                        },
+                        'unit_amount': 500,
                     },
-                    'unit_amount': 500,
-                },
-                'quantity': 1,
-            }
-        ],
-        success_url=request.build_absolute_uri(
-            '/checkout-success/'
-        ),
-        cancel_url=request.build_absolute_uri(
-            '/premium/'
-        ),
-    )
+                    'quantity': 1,
+                }
+            ],
+            success_url=request.build_absolute_uri(
+                '/checkout-success/'
+            ),
+            cancel_url=request.build_absolute_uri(
+                '/premium/'
+            ),
+        )
 
     return redirect(checkout_session.url, code=303)
 
@@ -336,4 +342,88 @@ def manage_subscription(request):
         {
             'profile': profile
         }
+    )
+
+
+@login_required
+def export_transactions(request):
+    """
+    Export user transactions as CSV file.
+    Premium feature only.
+    """
+
+    profile, _ = Profile.objects.get_or_create(
+        user=request.user
+    )
+
+    if not profile.is_premium:
+        messages.error(
+            request,
+            "Premium membership required."
+        )
+        return redirect('premium')
+
+    transactions = Transaction.objects.filter(
+        user=request.user
+    )
+
+    response = HttpResponse(
+        content_type='text/csv'
+    )
+
+    response[
+        'Content-Disposition'
+    ] = 'attachment; filename="transactions.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow([
+        'Date',
+        'Category',
+        'Amount',
+        'Description'
+    ])
+
+    for transaction in transactions:
+        writer.writerow([
+            transaction.date,
+            transaction.category.name,
+            transaction.amount,
+            transaction.description,
+        ])
+
+    return response
+
+
+@login_required
+def premium_insights(request):
+    """
+    Display premium financial insights.
+    """
+
+    profile, _ = Profile.objects.get_or_create(
+        user=request.user
+    )
+
+    if not profile.is_premium:
+        messages.error(
+            request,
+            "Premium membership required."
+        )
+        return redirect('premium')
+
+    transactions = Transaction.objects.filter(
+        user=request.user
+    )
+
+    total_transactions = transactions.count()
+
+    context = {
+        'total_transactions': total_transactions,
+    }
+
+    return render(
+        request,
+        'budget/premium_insights.html',
+        context
     )
