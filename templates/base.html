@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Freelancer Budget Tracker helps users manage income, expenses, categories, and premium budgeting insights through a responsive Django application.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Freelancer Budget Tracker{% endblock %}</title>
 
@@ -34,14 +35,18 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" aria-label="Go to dashboard">
                     <img src="{% static 'images/logo.png' %}"
-                         alt="Freelancer Budget Tracker logo"
-                         class="app-logo">
+                        alt="Freelancer Budget Tracker logo"
+                        class="app-logo"
+                        width="120"
+                        height="120">
                 </a>
             {% else %}
                 <a href="{% url 'home' %}" aria-label="Go to homepage">
                     <img src="{% static 'images/logo.png' %}"
                          alt="Freelancer Budget Tracker logo"
-                         class="app-logo">
+                         class="app-logo"
+                         width="120"
+                         height="120">
                 </a>
             {% endif %}
 
