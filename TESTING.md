@@ -1,8 +1,8 @@
 # Testing
 
-This section outlines the testing process carried out during the development of the Freelancer Budget Tracker application. 
+This section outlines the testing process carried out during the development of the Freelancer Budget Tracker application.
 
-Testing was carried out to ensure that all features function correctly, the user experience is consistent across devices, and the application meets expected performance, accessibility, and security standards.
+Testing was conducted to ensure that all features function correctly, the user experience remains consistent across devices, and the application meets expected performance, accessibility, responsiveness, and security standards.
 
 ---
 
@@ -19,15 +19,21 @@ Return back to the [README.md](README.md) file.
 | Login Page | ![screenshot](static/test_images/validator_login_page.png) | Pass: No Errors |
 | Dashboard | ![screenshot](static/test_images/validator_dashboard.png) | Pass: No Errors |
 | Transactions | ![screenshot](static/test_images/validator_transactions.png) | Pass: No Errors |
-| Categories | ![screenshot](static/test_images/validator_categories_minor_error_found.png) | Minor warning (non-critical) |
+| Categories | ![screenshot](static/test_images/validator_categories_minor_error_fix.png) | Pass: No Errors (Minor warning resolved) |
 | Edit Transaction | ![screenshot](static/test_images/validator_edit_transaction.png) | Pass: No Errors |
 | Edit Category | ![screenshot](static/test_images/validator_edit_category.png) | Pass: No Errors |
+| Premium | ![screenshot](static/test_images/validator_premium.png) | Pass: No Errors |
+| Home | ![screenshot](static/test_images/validator_home.png) | Pass: No Errors |
 
-The minor validation warning found on the Categories page does not affect application functionality and was determined to be non-critical.
+All pages passed validation successfully, confirming that the HTML code adheres to W3C standards and is free of critical errors.
+
+Minor warnings identified during development were resolved to improve code quality, semantic structure, accessibility, and maintainability.
+
+All validation screenshots were stored within the `test_images` folder for assessment evidence.
 
 ---
 
-### CSS Validation
+## CSS Validation
 
 The CSS was validated using the [W3C Jigsaw Validator](https://jigsaw.w3.org/css-validator).
 
@@ -35,13 +41,15 @@ The CSS was validated using the [W3C Jigsaw Validator](https://jigsaw.w3.org/css
 |------|------------|--------|
 | style.css | ![screenshot](static/test_images/validator_style_css.png) | Pass: No Errors |
 
+Autoprefixer was implemented to improve cross-browser CSS compatibility, ensuring that the application functions correctly across different browsers and browser versions.
+
 ---
 
 ## Python Validation
 
 Python code was validated using the [PEP8 CI Python Linter](https://pep8ci.herokuapp.com/).
 
-All files passed without errors, confirming adherence to Python best practices.
+All tested Python files passed validation successfully without errors, confirming adherence to Python best practices and PEP8 standards.
 
 | File | Screenshot | Result |
 |------|------------|--------|
@@ -54,7 +62,7 @@ All files passed without errors, confirming adherence to Python best practices.
 
 ## Manual Testing
 
-Manual testing was conducted to verify all core functionality.
+Manual testing was conducted to verify all core application functionality.
 
 | Feature | Expected Behaviour | Testing Performed | Result |
 |--------|------------------|------------------|--------|
@@ -71,7 +79,29 @@ Manual testing was conducted to verify all core functionality.
 | Filter by Month | Filter by month | Applied month filter | Pass |
 | Combined Filters | Combine multiple filters | Verified correct filtered results | Pass |
 | Dashboard Summary | Totals update dynamically | Verified calculations update correctly | Pass |
-| Creating transaction without category | System should prevent or fail safely | Verified that transactions require a category before creation | Pass |
+| Creating transaction without category | System should prevent or fail safely | Verified transactions require a category before creation | Pass |
+| Export Transactions | Premium users can export CSV successfully | Tested CSV download and premium restriction | Pass |
+| Premium Insights | Premium users can access insights page | Verified premium access restriction and dashboard insights | Pass |
+| Non-premium premium access | Non-premium users redirected to upgrade page | Attempted direct URL access without premium | Pass |
+
+---
+
+## Stripe Payment Testing
+
+Stripe payment functionality was tested using Stripe test cards.
+
+Stripe was implemented in test mode using Stripe test cards for educational and assessment purposes only.
+
+| Feature | Expected Behaviour | Result |
+|----------|-------------------|--------|
+| Premium upgrade | User redirected to Stripe Checkout | Pass |
+| Successful payment | Premium access activated | Pass |
+| Premium dashboard access | Premium features unlocked | Pass |
+| Premium cancellation | User can cancel premium access | Pass |
+| Existing premium user | Prevent duplicate purchases | Pass |
+| Premium feature restriction | Non-premium users prompted to upgrade | Pass |
+
+![Stripe payment](static/test_images/stripe_payment.png)
 
 ---
 
@@ -94,12 +124,11 @@ The password reset flow was tested using Django’s console email backend.
 |--------|------------------|--------|
 | Password reset request | ![Reset link generated](static/test_images/password_reset_request.png) | Pass |
 
-
 ---
 
 ## Responsiveness Testing
 
-The application was tested across multiple screen sizes.
+The application was tested across multiple screen sizes to ensure a responsive and accessible user experience.
 
 | Device | Screen Size | Result |
 |-------|------------|--------|
@@ -112,7 +141,7 @@ Improvements include:
 
 - Mobile navigation toggle
 - Responsive layout adjustments
-- Improved small screen spacing
+- Improved spacing on smaller screens
 
 ---
 
@@ -125,32 +154,41 @@ Improvements include:
 | Safari | Fully functional |
 
 ---
+
 ## Lighthouse Audit
 
-A Lighthouse audit was performed on the deployed application to evaluate performance, accessibility, best practices, and SEO. The results were as follows:
+A Lighthouse audit was performed on the deployed application to evaluate performance, accessibility, best practices, and SEO.
 
 The results demonstrate that the application meets modern web standards for performance, accessibility, and usability, with only minor non-critical recommendations identified.
 
-| Page |  Screenshot | Result |
+| Page | Screenshot | Result |
 |----------|----------|-------------|
-| Login | ![Login](static/test_images/login_lighthouse_report.png) |Pass |
-| Password Reset | ![Password Reset](static/test_images/password_reset_lighthouse_report.png) |Pass |
-| Password Reset Done | ![Password Reset Done](static/test_images/password_reset_done_lighthouse_report.png) |Pass |
-| Signup | ![Signup](static/test_images/signup_lighthouse_report.png) |Pass |
-| Dashboard | ![Dashboard](static/test_images/dashboard_lighthouse_report.png) |Pass |
-| Categories | ![Categories](static/test_images/categories_lighthouse_report.png) |Pass |
-| Add Category | ![Add Category](static/test_images/add_category_lighthouse_report.png) |Pass |
-| Edit Category | ![Edit Category](static/test_images/edit_category_lighthouse_report.png) |Pass |
-| Transactions | ![Transactions](static/test_images/transactions_lighthouse_report.png) |Pass |
-| Add Transaction | ![Add Transaction](static/test_images/add_transaction_lighthouse_report.png) |Pass |
-| Edit Transaction | ![Edit Transaction](static/test_images/edit_transaction_lighthouse_report.png) |Pass |
-| 404 | ![404](static/test_images/404_lighthouse_report.png) |Non-critical 404 warnings during automated scans
-| Logout | ![Logout](static/test_images/logout_lighthouse_report.png) |Pass |
+| Login | ![Login](static/test_images/login_lighthouse_report.png) | Pass |
+| Password Reset | ![Password Reset](static/test_images/password_reset_lighthouse_report.png) | Pass |
+| Password Reset Done | ![Password Reset Done](static/test_images/password_reset_done_lighthouse_report.png) | Pass |
+| Signup | ![Signup](static/test_images/signup_lighthouse_report.png) | Pass |
+| Dashboard | ![Dashboard](static/test_images/dashboard_lighthouse_report.png) | Pass |
+| Categories | ![Categories](static/test_images/categories_lighthouse_report.png) | Pass |
+| Add Category | ![Add Category](static/test_images/add_category_lighthouse_report.png) | Pass |
+| Edit Category | ![Edit Category](static/test_images/edit_category_lighthouse_report.png) | Pass |
+| Transactions | ![Transactions](static/test_images/transactions_lighthouse_report.png) | Pass |
+| Add Transaction | ![Add Transaction](static/test_images/add_transaction_lighthouse_report.png) | Pass |
+| Edit Transaction | ![Edit Transaction](static/test_images/edit_transaction_lighthouse_report.png) | Pass |
+| 404 | ![404](static/test_images/404_lighthouse_report.png) | Non-critical 404 warnings during automated scans |
+| Logout | ![Logout](static/test_images/logout_lighthouse_report.png) | Pass |
+| Premium | ![Premium](static/test_images/premium_lighthouse_report.png) | Pass |
+| Home | ![Home](static/test_images/home_lighthouse_report.png) | Pass |
+| Payment Successful | ![Payment Success](static/test_images/payment_successful_lighthouse_report.png) | Pass |
+
+Some Lighthouse recommendations remained non-critical and related to third-party libraries such as Bootstrap, Chart.js, and external CDN resources.
+
+These warnings do not negatively affect functionality, accessibility, or overall user experience and are considered acceptable within the scope of the project.
 
 ---
+
 ## User Story Testing
 
-Each user story was tested to ensure correct functionality.
+Each user story was extensively tested to ensure correct functionality.
 
 | User Story | Action | Expected Outcome | Screenshot | Result |
 |------------|--------|-----------------|------------|--------|
@@ -169,37 +207,48 @@ Each user story was tested to ensure correct functionality.
 | Password reset | Request reset | Reset link generated | ![Password Reset](static/test_images/password_reset.png) | Pass |
 | Password reset done | Submit new password | Password updated | ![Password Reset Done](static/test_images/password_reset_done.png) | Pass |
 | 404 page | Access invalid route | Custom 404 displayed | ![404](static/test_images/404_(iPhone_12_Pro).png) | Pass |
+| Premium upgrade | Complete payment | Premium access granted | ![Premium](static/test_images/premium.png) | Pass |
+| Payment successful | Complete payment | Confirmation shown | ![Payment Successful](static/test_images/payment_successful.png) | Pass |
+| Home page | Access home | Home page displayed | ![Home](static/test_images/home.png) | Pass |
 
 ---
 
 ## User Feedback & Messaging
 
-Django messages framework was implemented to provide feedback on user actions.
+Django’s messages framework was implemented to provide users with immediate feedback after actions are performed.
 
-Users receive confirmation when:
+Users receive confirmation messages when:
 
 - Creating an account
-- Adding/editing/deleting categories
-- Adding/editing/deleting transactions
-- Messages automatically dismiss after a short delay while still allowing manual dismissal by the user.
+- Adding categories
+- Editing categories
+- Deleting categories
+- Adding transactions
+- Editing transactions
+- Deleting transactions
+
+Messages automatically dismiss after a short delay while still allowing manual dismissal by the user.
+
 ---
 
 ## Safe Delete Confirmation
 
 Users must confirm before deleting data.
 
-This prevents accidental loss and improves usability.
+This prevents accidental data loss and improves overall usability.
 
 ---
 
 ## Accessibility Improvements
 
-Improvements include:
+Accessibility improvements implemented throughout the project include:
 
 - Form labels for all inputs
-- ARIA labels for actions
+- ARIA labels for interactive actions
 - Keyboard navigation support
-- Improved contrast
+- Improved colour contrast
+- Explicit width and height attributes added to images to reduce layout shift
+- Meta descriptions added to improve SEO and enhance Lighthouse audit results
 
 ---
 
@@ -207,48 +256,61 @@ Improvements include:
 
 ### Deployment Issue
 
-- Problem: Heroku crash due to dependency conflict  
-- Fix: Removed conflicting package  
-- Result: Successful deployment  
+- Problem: Heroku crash due to dependency conflict
+- Fix: Removed conflicting package
+- Result: Successful deployment
 
 ### Mobile Layout Issue
 
-- Problem: Table overflow  
-- Fix: Responsive design improvements  
-- Result: Improved usability  
+- Problem: Table overflow on smaller screens
+- Fix: Responsive layout improvements
+- Result: Improved mobile usability
 
 ### Navbar Issue
 
-- Problem: Overflow on mobile  
-- Fix: Added toggle menu  
-- Result: Responsive navigation  
+- Problem: Navigation overflow on mobile devices
+- Fix: Added responsive navigation toggle
+- Result: Improved responsive navigation
 
 ### Footer Issue
 
-- Problem: Incorrect positioning  
-- Fix: Flexbox layout  
-- Result: Stable footer  
+- Problem: Incorrect footer positioning
+- Fix: Flexbox layout implementation
+- Result: Stable footer positioning
+
+### Premium Feature 500 Error
+
+- Problem: Premium routes caused a server error after deployment
+- Cause: Database migrations for the Profile model had not been applied on Heroku
+- Fix: Ran production migrations using the Heroku CLI
+- Result: Premium features and dashboard functionality restored successfully
+
+### HTML Validation Error
+
+- Problem: W3C validator reported unclosed div elements on the dashboard page
+- Cause: Missing closing div tags within the premium feature section
+- Fix: Corrected HTML structure and revalidated all pages
+- Result: All tested pages passed validation successfully
 
 ---
 
 ## Security Testing
 
-- Authentication required for protected routes  
-- Users can only access their own data  
-- CSRF protection enabled  
-- Secure session handling  
+- Authentication required for protected routes
+- Users can only access their own data
+- CSRF protection enabled
+- Secure session handling implemented
 
 ---
 
 ## Performance Observations
 
-The application demonstrates efficient performance, with fast load times, responsive interactions, and optimised database queries for the current scale of data.
-  
+The application demonstrates efficient performance with fast load times, responsive interactions, and optimised database queries for the current scale of data.
 
 ---
 
 ## Final Testing Summary
 
-All features were tested successfully with no critical issues identified.
+All features were tested successfully with no critical unresolved issues identified.
 
-The application is stable, responsive, and meets the requirements for deployment.
+The application is stable, responsive, accessible, and meets the requirements for deployment.
