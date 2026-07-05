@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -260,60 +261,114 @@ def premium(request):
 @login_required
 def checkout_success(request):
     """
-Activate premium membership after user payment has been processed successfully.
+    Verify the Stripe Checkout Session before activating
+    Premium membership.
     """
-    profile, _ = Profile.objects.get_or_create(user=request.user)
-    profile.is_premium = True
-    profile.save()
 
-    messages.success(
-        request,
-        'Premium membership activated successfully.'
-    )
+    session_id = request.GET.get("session_id")
 
-    return render(
-        request,
-        'budget/checkout_success.html'
-    )
+    if not session_id:
+        messages.error(
+            request,
+            "Invalid payment session."
+        )
+        return redirect("premium")
+
+    try:
+        checkout_session = stripe.checkout.Session.retrieve(
+            session_id
+        )
+
+        # Verify the payment belongs to the logged-in user
+        if checkout_session.client_reference_id != str(request.user.id):
+            messages.error(
+                request,
+                "Payment could not be verified."
+            )
+            return redirect("premium")
+
+        # Verify the payment was successful
+        if (
+            checkout_session.payment_status == "paid"
+            and checkout_session.mode == "payment"
+        ):
+
+            profile, _ = Profile.objects.get_or_create(
+                user=request.user
+            )
+
+            profile.is_premium = True
+            profile.save()
+
+            messages.success(
+                request,
+                "Premium membership activated successfully."
+            )
+
+            return render(
+                request,
+                "budget/checkout_success.html"
+            )
+
+        messages.error(
+            request,
+            "Payment could not be verified."
+        )
+
+        return redirect("premium")
+
+    except stripe.error.StripeError:
+
+        messages.error(
+            request,
+            "Unable to verify payment. Please contact support if your payment was successful."
+        )
+
+        return redirect("premium")
 
 
 @login_required
+@require_POST
 def create_checkout_session(request):
     """
-    Create Stripe checkout session when the user initiates the payment.
+    Create a Stripe Checkout Session for purchasing
+    Premium membership.
     """
-    profile, _ = Profile.objects.get_or_create(user=request.user)
 
+    profile, _ = Profile.objects.get_or_create(
+        user=request.user
+    )
 
     if profile.is_premium:
         messages.info(
             request,
-            'You already have Premium access.'
+            "You already have Premium access."
         )
-        return redirect('dashboard')
+        return redirect("dashboard")
 
     checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            mode='payment',
-            line_items=[
-                {
-                    'price_data': {
-                        'currency': 'eur',
-                        'product_data': {
-                            'name': 'Premium Budget Tracker Access',
-                        },
-                        'unit_amount': 500,
+        payment_method_types=["card"],
+        mode="payment",
+        client_reference_id=request.user.id,
+        line_items=[
+            {
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {
+                        "name": "Premium Budget Tracker Access",
                     },
-                    'quantity': 1,
-                }
-            ],
-            success_url=request.build_absolute_uri(
-                '/checkout-success/'
-            ),
-            cancel_url=request.build_absolute_uri(
-                '/premium/'
-            ),
-        )
+                    "unit_amount": 500,
+                },
+                "quantity": 1,
+            }
+        ],
+        success_url=request.build_absolute_uri(
+            "/checkout-success/?session_id={CHECKOUT_SESSION_ID}"
+        ),
+        cancel_url=request.build_absolute_uri(
+            "/premium/"
+        ),
+    )
 
     return redirect(checkout_session.url, code=303)
 

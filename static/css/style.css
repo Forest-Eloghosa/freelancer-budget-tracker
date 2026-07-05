@@ -178,6 +178,38 @@ input, select, textarea {
     margin-top: 0.25rem;
 }
 
+/* ===== DJANGO MESSAGES ===== */
+
+.alert {
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+.alert-info {
+    background-color: #cff4fc;
+    color: #055160;
+    border: 1px solid #b6effb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+}
+
 /* ===== TABLET ===== */
 @media (max-width: 768px) {
 
