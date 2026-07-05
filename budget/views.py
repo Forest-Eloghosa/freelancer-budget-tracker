@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -261,70 +263,14 @@ def premium(request):
 @login_required
 def checkout_success(request):
     """
-    Verify the Stripe Checkout Session before activating
-    Premium membership.
+    Display payment success page after Stripe
+    redirects the customer.
     """
 
-    session_id = request.GET.get("session_id")
-
-    if not session_id:
-        messages.error(
-            request,
-            "Invalid payment session."
-        )
-        return redirect("premium")
-
-    try:
-        checkout_session = stripe.checkout.Session.retrieve(
-            session_id
-        )
-
-        # Verify the payment belongs to the logged-in user
-        if checkout_session.client_reference_id != str(request.user.id):
-            messages.error(
-                request,
-                "Payment could not be verified."
-            )
-            return redirect("premium")
-
-        # Verify the payment was successful
-        if (
-            checkout_session.payment_status == "paid"
-            and checkout_session.mode == "payment"
-        ):
-
-            profile, _ = Profile.objects.get_or_create(
-                user=request.user
-            )
-
-            profile.is_premium = True
-            profile.save()
-
-            messages.success(
-                request,
-                "Premium membership activated successfully."
-            )
-
-            return render(
-                request,
-                "budget/checkout_success.html"
-            )
-
-        messages.error(
-            request,
-            "Payment could not be verified."
-        )
-
-        return redirect("premium")
-
-    except stripe.error.StripeError:
-
-        messages.error(
-            request,
-            "Unable to verify payment. Please contact support if your payment was successful."
-        )
-
-        return redirect("premium")
+    return render(
+        request,
+        "budget/checkout_success.html",
+    )
 
 
 @login_required
@@ -483,3 +429,45 @@ def premium_insights(request):
         'budget/premium_insights.html',
         context
     )
+
+@csrf_exempt
+def stripe_webhook(request):
+    """
+    Receive Stripe webhook events and activate
+    Premium membership after successful payment.
+    """
+
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            settings.STRIPE_WEBHOOK_SECRET,
+        )
+
+    except ValueError:
+        return HttpResponse(status=400)
+
+    except stripe.error.SignatureVerificationError:
+        return HttpResponse(status=400)
+
+    if event["type"] == "checkout.session.completed":
+
+        session = event["data"]["object"]
+
+        if session["payment_status"] == "paid":
+
+            user_id = session.get("client_reference_id")
+
+            if user_id:
+
+                profile, _ = Profile.objects.get_or_create(
+                    user_id=user_id
+                )
+
+                profile.is_premium = True
+                profile.save()
+
+    return HttpResponse(status=200)

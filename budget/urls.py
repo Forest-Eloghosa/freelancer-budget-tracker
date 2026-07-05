@@ -99,4 +99,10 @@ urlpatterns = [
         views.premium_insights,
         name='premium_insights'
     ),
+
+    path(
+    "stripe/webhook/",
+    views.stripe_webhook,
+    name="stripe_webhook",
+   ),
 ]
