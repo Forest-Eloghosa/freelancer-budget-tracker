@@ -362,9 +362,10 @@ def create_checkout_session(request):
                 "quantity": 1,
             }
         ],
-        success_url=request.build_absolute_uri(
-            "/checkout-success/?session_id={CHECKOUT_SESSION_ID}"
-        ),
+        success_url=(
+    request.build_absolute_uri("/checkout-success/")
+    + "?session_id={CHECKOUT_SESSION_ID}"
+),
         cancel_url=request.build_absolute_uri(
             "/premium/"
         ),
