@@ -448,32 +448,17 @@ def stripe_webhook(request):
             sig_header,
             settings.STRIPE_WEBHOOK_SECRET,
         )
-
-    except ValueError as exc:
-        logger.warning("Invalid Stripe webhook payload: %s", exc)
+    except ValueError:
         return HttpResponse(status=400)
 
-    except stripe.error.SignatureVerificationError as exc:
-        logger.warning("Invalid Stripe webhook signature: %s", exc)
+    except stripe.error.SignatureVerificationError:
         return HttpResponse(status=400)
 
-    except stripe.error.StripeError as exc:
-        logger.exception("Stripe webhook processing failed: %s", exc)
-        return HttpResponse(status=400)
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
 
-    except Exception as exc:
-        logger.exception("Unexpected error while processing Stripe webhook: %s", exc)
-        return HttpResponse(status=400)
-
-    if not isinstance(event, dict):
-        logger.warning("Stripe webhook event was not a dict.")
-        return HttpResponse(status=400)
-
-    if event.get("type") == "checkout.session.completed":
-        session = event.get("data", {}).get("object", {})
-
-        if isinstance(session, dict) and session.get("payment_status") == "paid":
-            user_id = session.get("client_reference_id")
+        if session["payment_status"] == "paid":
+            user_id = session["client_reference_id"]
 
             if user_id:
                 profile, _ = Profile.objects.get_or_create(
