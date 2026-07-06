@@ -1,3 +1,6 @@
+import csv
+import logging
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -6,14 +9,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.db.models import Sum
-from .models import Category, Transaction
-from .forms import CategoryForm, TransactionForm
-from .models import Category, Transaction, Profile
-
-import csv
-from django.http import HttpResponse
-import stripe
 from django.conf import settings
+from .models import Category, Transaction, Profile
+from .forms import CategoryForm, TransactionForm
+
+import stripe
+
+logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -447,22 +449,33 @@ def stripe_webhook(request):
             settings.STRIPE_WEBHOOK_SECRET,
         )
 
-    except ValueError:
+    except ValueError as exc:
+        logger.warning("Invalid Stripe webhook payload: %s", exc)
         return HttpResponse(status=400)
 
-    except stripe.error.SignatureVerificationError:
+    except stripe.error.SignatureVerificationError as exc:
+        logger.warning("Invalid Stripe webhook signature: %s", exc)
         return HttpResponse(status=400)
 
-    if event["type"] == "checkout.session.completed":
+    except stripe.error.StripeError as exc:
+        logger.exception("Stripe webhook processing failed: %s", exc)
+        return HttpResponse(status=400)
 
-        session = event["data"]["object"]
+    except Exception as exc:
+        logger.exception("Unexpected error while processing Stripe webhook: %s", exc)
+        return HttpResponse(status=400)
 
-        if session["payment_status"] == "paid":
+    if not isinstance(event, dict):
+        logger.warning("Stripe webhook event was not a dict.")
+        return HttpResponse(status=400)
 
+    if event.get("type") == "checkout.session.completed":
+        session = event.get("data", {}).get("object", {})
+
+        if isinstance(session, dict) and session.get("payment_status") == "paid":
             user_id = session.get("client_reference_id")
 
             if user_id:
-
                 profile, _ = Profile.objects.get_or_create(
                     user_id=user_id
                 )
