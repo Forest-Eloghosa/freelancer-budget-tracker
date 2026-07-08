@@ -10,13 +10,32 @@
     </h1>
 
     <p class="lead text-muted">
-        Thank you for upgrading to Premium.
+    Thank you for upgrading to Premium.
     </p>
 
-    <a href="{% url 'dashboard' %}"
-       class="btn btn-primary mt-4">
-        Return to Dashboard
-    </a>
+{% if payment_pending %}
+
+<div class="alert alert-info mt-4">
+    <strong>Payment received!</strong>
+    <br>
+    Your Premium membership is being activated.
+    Please wait a few moments and refresh your dashboard.
+</div>
+
+{% else %}
+
+<div class="alert alert-success mt-4">
+    <strong>Your Premium membership is active!</strong>
+    <br>
+    You can now access all Premium features.
+</div>
+
+{% endif %}
+
+<a href="{% url 'dashboard' %}"
+   class="btn btn-primary">
+    Go to Dashboard
+</a>
 
 </div>
 {% endblock %}

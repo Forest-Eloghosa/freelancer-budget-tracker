@@ -1,6 +1,3 @@
-import csv
-import logging
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +9,9 @@ from django.db.models import Sum
 from django.conf import settings
 from .models import Category, Transaction, Profile
 from .forms import CategoryForm, TransactionForm
+
+import csv
+import logging
 
 import stripe
 
@@ -265,13 +265,50 @@ def premium(request):
 @login_required
 def checkout_success(request):
     """
-    Display payment success page after Stripe
-    redirects the customer.
+    Display the payment success page after Stripe redirects
+    the customer.
     """
+
+    session_id = request.GET.get("session_id")
+
+    if not session_id:
+        messages.error(
+            request,
+            "Invalid payment session. "
+            "Please complete checkout to unlock Premium features."
+        )
+        return redirect("premium")
+
+
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+    except stripe.error.StripeError:
+        logger.warning(
+            "Unable to verify checkout session for user_id=%s session_id=%s",
+            request.user.id,
+            session_id,
+        )
+    else:
+        if (
+            session.payment_status == "paid"
+            and str(session.client_reference_id) == str(request.user.id)
+        ):
+            if not profile.is_premium:
+                profile.is_premium = True
+                profile.save()
+
+
+    context = {
+        "payment_pending": not profile.is_premium,
+    }
+
 
     return render(
         request,
         "budget/checkout_success.html",
+        context,
     )
 
 
@@ -448,24 +485,42 @@ def stripe_webhook(request):
             sig_header,
             settings.STRIPE_WEBHOOK_SECRET,
         )
+
     except ValueError:
+        logger.warning("Invalid webhook payload.")
         return HttpResponse(status=400)
 
     except stripe.error.SignatureVerificationError:
+        logger.warning("Invalid webhook signature.")
         return HttpResponse(status=400)
 
+
     if event["type"] == "checkout.session.completed":
+
         session = event["data"]["object"]
 
-        if session["payment_status"] == "paid":
-            user_id = session["client_reference_id"]
+        if session.get("payment_status") == "paid":
+
+            user_id = session.get("client_reference_id")
+
+            logger.info(
+                "Stripe payment completed for user_id=%s",
+                user_id
+            )
 
             if user_id:
-                profile, _ = Profile.objects.get_or_create(
+
+                profile, created = Profile.objects.get_or_create(
                     user_id=user_id
                 )
 
                 profile.is_premium = True
                 profile.save()
+
+                logger.info(
+                    "Premium activated successfully for user_id=%s",
+                    user_id
+                )
+
 
     return HttpResponse(status=200)
