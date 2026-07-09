@@ -1,36 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Payment Successful{% endblock %}
+{% block title %}Payment Verified{% endblock %}
 
 {% block content %}
 <div class="container py-5 text-center">
 
     <h1 class="fw-bold text-success mb-4">
-        Payment Successful
+        Payment Verified
     </h1>
 
     <p class="lead text-muted">
-    Thank you for upgrading to Premium.
+        Thank you. Your Premium payment has been verified.
     </p>
-
-{% if payment_pending %}
-
-<div class="alert alert-info mt-4">
-    <strong>Payment received!</strong>
-    <br>
-    Your Premium membership is being activated.
-    Please wait a few moments and refresh your dashboard.
-</div>
-
-{% else %}
 
 <div class="alert alert-success mt-4">
     <strong>Your Premium membership is active!</strong>
     <br>
     You can now access all Premium features.
 </div>
-
-{% endif %}
 
 <a href="{% url 'dashboard' %}"
    class="btn btn-primary">

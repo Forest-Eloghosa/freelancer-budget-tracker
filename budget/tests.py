@@ -80,6 +80,26 @@ class StripeWebhookTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Profile.objects.get(user=user).is_premium)
 
+    def test_checkout_success_redirects_on_invalid_session(self):
+        user = User.objects.create_user(
+            username='invalidsessionuser',
+            password='testpass123',
+        )
+        self.client.force_login(user)
+
+        with patch(
+            'budget.views.stripe.checkout.Session.retrieve',
+            side_effect=stripe.error.InvalidRequestError(
+                message='No such checkout session: random123',
+                param='id',
+            ),
+        ):
+            response = self.client.get('/checkout-success/?session_id=random123')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('premium'))
+        self.assertFalse(Profile.objects.get(user=user).is_premium)
+
 
 class AuthAndOwnershipTests(TestCase):
     def assert_logged_in_user_redirects(self, username, start_url):
@@ -176,5 +196,6 @@ class AuthAndOwnershipTests(TestCase):
         ):
             response = self.client.get('/checkout-success/?session_id=test-session-id')
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('premium'))
         self.assertFalse(Profile.objects.get(user=user).is_premium)

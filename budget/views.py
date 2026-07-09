@@ -325,17 +325,30 @@ def checkout_success(request):
             request.user.id,
             session_id,
         )
+        messages.error(
+            request,
+            "Unable to verify this payment session. "
+            "Please complete checkout through Stripe."
+        )
+        return redirect("premium")
     else:
         if (
-            session.payment_status == "paid"
-            and str(session.client_reference_id) == str(request.user.id)
+            session.payment_status != "paid"
+            or str(session.client_reference_id) != str(request.user.id)
         ):
-            if not profile.is_premium:
-                profile.is_premium = True
-                profile.save()
+            messages.error(
+                request,
+                "This payment session is invalid or does not belong to "
+                "your account."
+            )
+            return redirect("premium")
+
+        if not profile.is_premium:
+            profile.is_premium = True
+            profile.save()
 
     context = {
-        "payment_pending": not profile.is_premium,
+        "payment_pending": False,
     }
 
     return render(
