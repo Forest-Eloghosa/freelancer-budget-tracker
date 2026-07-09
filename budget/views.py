@@ -78,8 +78,8 @@ class CustomLoginView(LoginView):
             *args,
             **kwargs
         )
-    
-    
+
+
 @login_required
 def dashboard(request):
     """
@@ -315,7 +315,6 @@ def checkout_success(request):
         )
         return redirect("premium")
 
-
     profile, _ = Profile.objects.get_or_create(user=request.user)
 
     try:
@@ -335,11 +334,9 @@ def checkout_success(request):
                 profile.is_premium = True
                 profile.save()
 
-
     context = {
         "payment_pending": not profile.is_premium,
     }
-
 
     return render(
         request,
@@ -383,10 +380,9 @@ def create_checkout_session(request):
                 "quantity": 1,
             }
         ],
-        success_url=(
-    request.build_absolute_uri("/checkout-success/")
-    + "?session_id={CHECKOUT_SESSION_ID}"
-),
+
+        success_url=(request.build_absolute_uri("/checkout-success/")
+                     + "?session_id={CHECKOUT_SESSION_ID}"),
         cancel_url=request.build_absolute_uri(
             "/premium/"
         ),
@@ -505,6 +501,7 @@ def premium_insights(request):
         context
     )
 
+
 @csrf_exempt
 def stripe_webhook(request):
     """
@@ -560,6 +557,5 @@ def stripe_webhook(request):
                     )
     except Exception:
         logger.exception("Unexpected error while processing Stripe webhook.")
-
 
     return HttpResponse(status=200)

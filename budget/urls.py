@@ -101,8 +101,8 @@ urlpatterns = [
     ),
 
     path(
-    "stripe/webhook/",
-    views.stripe_webhook,
-    name="stripe_webhook",
-   ),
+     "stripe/webhook/",
+     views.stripe_webhook,
+     name="stripe_webhook",
+    ),
 ]

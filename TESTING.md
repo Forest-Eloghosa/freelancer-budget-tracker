@@ -12,7 +12,7 @@ The application was validated using industry-standard tools to ensure clean, acc
 
 Validation was performed on both frontend and backend components to ensure compliance with web standards and best practices.
 
-Return back to the [README.md](README.md) file.
+Return to the [README.md](README.md) file.
 
 | Page | Screenshot | Result |
 |------|------------|--------|
@@ -57,6 +57,7 @@ All tested Python files passed validation successfully without errors, confirmin
 | views.py | ![screenshot](static/test_images/pep8ci_views.png) | Pass |
 | urls.py | ![screenshot](static/test_images/pep8ci_urls.png) | Pass |
 | forms.py | ![screenshot](static/test_images/pep8ci_forms.png) | Pass |
+| tests.py | ![screenshot](static/test_images/pep8ci_tests.png) | Pass |
 
 ---
 
@@ -83,6 +84,9 @@ Manual testing was conducted to verify all core application functionality.
 | Export Transactions | Premium users can export CSV successfully | Tested CSV download and premium restriction | Pass |
 | Premium Insights | Premium users can access insights page | Verified premium access restriction and dashboard insights | Pass |
 | Non-premium premium access | Non-premium users redirected to upgrade page | Attempted direct URL access without premium | Pass |
+| Security warnings when users attempt to access premium features without payment | Non-premium users receive appropriate warning messages | Attempted direct premium access without payment | Pass |
+
+![Security Error Warning](static/test_images/premium_error_warning.png)
 
 ---
 
@@ -102,6 +106,7 @@ Stripe was implemented in test mode using Stripe test cards for educational and 
 | Premium feature restriction | Non-premium users prompted to upgrade | Pass |
 
 ![Stripe payment](static/test_images/stripe_payment.png)
+![Webhook payment successful](static/test_images/checkout_session_completed.png)
 
 ---
 
@@ -120,9 +125,13 @@ Stripe was implemented in test mode using Stripe test cards for educational and 
 
 The password reset flow was tested using Django’s console email backend.
 
-| Feature | Expected Behaviour | Result |
-|--------|------------------|--------|
-| Password reset request | ![Reset link generated](static/test_images/password_reset_request.png) | Pass |
+| Feature | Expected Behaviour | Screenshot | Result |
+|--------|------------------|------------|--------|
+| Password reset request | Reset email link is generated | ![Reset link generated](static/test_images/password_reset_request.png) | Pass |
+| Password reset confirm | User can set a new password using the reset link | ![Reset confirm](static/test_images/password_reset_done.png) | Pass |
+| Password reset complete | User is redirected after changing password successfully | ![Reset complete](static/test_images/password_reset_done.png) | Pass |
+
+The password reset flow was verified end to end by requesting a reset, opening the emailed link, setting a new password, and confirming the success page.
 
 ---
 
@@ -182,7 +191,7 @@ The results demonstrate that the application meets modern web standards for perf
 
 Some Lighthouse recommendations remained non-critical and related to third-party libraries such as Bootstrap, Chart.js, and external CDN resources.
 
-These warnings do not negatively affect functionality, accessibility, or overall user experience and are considered acceptable within the scope of the project.
+These recommendations relate mainly to external resources and third-party libraries and do not impact the core functionality of the application.
 
 ---
 
@@ -226,6 +235,7 @@ Users receive confirmation messages when:
 - Adding transactions
 - Editing transactions
 - Deleting transactions
+- Error warnings for invalid actions
 
 Messages automatically dismiss after a short delay while still allowing manual dismissal by the user.
 
@@ -300,6 +310,8 @@ Accessibility improvements implemented throughout the project include:
 - Users can only access their own data
 - CSRF protection enabled
 - Secure session handling implemented
+- Password validation handled through Django authentication forms
+- Database queries filtered by authenticated user ownership
 
 ---
 
