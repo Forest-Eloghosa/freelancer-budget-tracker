@@ -1,19 +1,21 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
+from django.contrib.auth.views import LoginView
 from django.db.models import Sum
-from django.conf import settings
-from .models import Category, Transaction, Profile
-from .forms import CategoryForm, TransactionForm
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 import csv
 import logging
 
 import stripe
+
+from .forms import CategoryForm, TransactionForm
+from .models import Category, Profile, Transaction
 
 logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -21,9 +23,13 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def home(request):
     """
-Display landing page for new users to
-better understand the application they just discovered.
+    Display landing page for new users.
+    Redirect authenticated users to dashboard.
     """
+
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
     return render(request, 'budget/home.html')
 
 
@@ -31,19 +37,49 @@ def signup_view(request):
     """
     Allow a new user to create an account.
     """
+
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
+
         if form.is_valid():
             form.save()
-            messages.success(request, 'Account created successfully. Welcome!')
+            messages.success(
+                request,
+                'Account created successfully. Welcome!'
+            )
             return redirect('login')
-        messages.error(request, 'Please correct the errors below.')
+
+        messages.error(
+            request,
+            'Please correct the errors below.'
+        )
+
     else:
         form = UserCreationForm()
 
-    return render(request, 'registration/signup.html', {'form': form})
+    return render(
+        request,
+        'registration/signup.html',
+        {'form': form}
+    )
 
 
+class CustomLoginView(LoginView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("dashboard")
+
+        return super().dispatch(
+            request,
+            *args,
+            **kwargs
+        )
+    
+    
 @login_required
 def dashboard(request):
     """
@@ -494,33 +530,36 @@ def stripe_webhook(request):
         logger.warning("Invalid webhook signature.")
         return HttpResponse(status=400)
 
+    try:
+        if event["type"] == "checkout.session.completed":
 
-    if event["type"] == "checkout.session.completed":
+            session = event["data"]["object"]
 
-        session = event["data"]["object"]
+            if session.get("payment_status") == "paid":
 
-        if session.get("payment_status") == "paid":
-
-            user_id = session.get("client_reference_id")
-
-            logger.info(
-                "Stripe payment completed for user_id=%s",
-                user_id
-            )
-
-            if user_id:
-
-                profile, created = Profile.objects.get_or_create(
-                    user_id=user_id
-                )
-
-                profile.is_premium = True
-                profile.save()
+                user_id = session.get("client_reference_id")
 
                 logger.info(
-                    "Premium activated successfully for user_id=%s",
+                    "Stripe payment completed for user_id=%s",
                     user_id
                 )
+
+                if user_id:
+
+                    profile, _ = Profile.objects.get_or_create(
+                        user_id=user_id
+                    )
+
+                    if not profile.is_premium:
+                        profile.is_premium = True
+                        profile.save()
+
+                    logger.info(
+                        "Premium activated successfully for user_id=%s",
+                        user_id
+                    )
+    except Exception:
+        logger.exception("Unexpected error while processing Stripe webhook.")
 
 
     return HttpResponse(status=200)
